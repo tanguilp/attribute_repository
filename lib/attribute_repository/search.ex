@@ -9,20 +9,6 @@ defmodule AttributeRepository.Search do
   ) :: {:ok, [AttributeRepository.resource()]}
   | {:error, %AttributeRepository.ReadError{}}
 
-  defmacro __using__(_opts) do
-    quote do
-      def read!(resource_id, attributes, opts) do
-        case read(resource_id, attribute, opts) do
-          {:ok, resource} ->
-            resource
-
-          {:error, exception} ->
-            raise exception
-        end
-      end
-    end
-  end
-
   defmodule Filter do
     @type t :: any()
   end
