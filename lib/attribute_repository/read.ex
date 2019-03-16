@@ -2,9 +2,9 @@ defmodule AttributeRepository.Read do
   @moduledoc """
   """
 
-  @callback read(
+  @callback get(
     AttributeRepository.resource_id(),
-    [AttributeRepository.attribute()],
+    [AttributeRepository.attribute()] | :all,
     AttributeRepository.run_opts()
   ) :: {:ok, AttributeRepository.resource()}
   | {:error, %AttributeRepository.ReadError{}}
@@ -12,8 +12,8 @@ defmodule AttributeRepository.Read do
 
   defmacro __using__(_opts) do
     quote do
-      def read!(resource_id, attributes, opts) do
-        case read(resource_id, attribute, opts) do
+      def get!(resource_id, attributes, opts) do
+        case get(resource_id, attributes, opts) do
           {:ok, resource} ->
             resource
 

@@ -9,9 +9,12 @@ defmodule AttributeRepository.Search.AttributePath do
 
   def new(m) do
     %__MODULE__{
-      attribute: m[:attribute],
-      uri: m[:uri],
-      sub_attribute: m[:sub_attribute]
+      attribute: string(m[:attribute]),
+      uri: string(m[:uri]),
+      sub_attribute: string(m[:sub_attribute])
     }
   end
+
+  defp string(nil), do: nil
+  defp string([_ | _] = charlist), do: List.to_string(charlist)
 end

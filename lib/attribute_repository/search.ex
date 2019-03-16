@@ -4,7 +4,7 @@ defmodule AttributeRepository.Search do
 
   @callback search(
     AttributeRepository.Search.Filter.t(),
-    [AttributeRepository.attribute()],
+    [AttributeRepository.attribute()] | :all,
     AttributeRepository.run_opts()
   ) :: {:ok, [AttributeRepository.resource()]}
   | {:error, %AttributeRepository.ReadError{}}

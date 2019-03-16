@@ -8,7 +8,6 @@ defmodule AttributeRepository.Write do
     AttributeRepository.run_opts()
   ) :: {:ok, AttributeRepository.resource()}
   | {:error, %AttributeRepository.WriteError{}}
-  | {:error, %AttributeRepository.Read.NotFoundError{}}
 
   @callback delete(
     AttributeRepository.resource_id(),

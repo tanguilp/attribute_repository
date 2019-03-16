@@ -36,6 +36,7 @@ defmodule AttributeRepository do
   | DateTime.t()
   | binary()
   | ref()
+  | nil
 
   @type object_attribute :: %{required(attribute) => simple_attribute()}
 
