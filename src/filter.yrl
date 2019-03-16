@@ -38,7 +38,11 @@ valFilter -> valLogExp : '$1'.
 valFilter -> '(' valFilter ')' : '$2'.
 valFilter -> 'not' '(' valFilter ')' : {'not', '$3'}.
 
+%FIXME: quickhack because SCIM standard grammar is wrong
+valLogExp -> attrExp 'and' valLogExp : {'and', '$1', '$3'}.
 valLogExp -> attrExp 'and' attrExp : {'and', '$1', '$3'}.
+valLogExp -> attrExp 'or' valLogExp : {'or', '$1', '$3'}.
+valLogExp -> attrExp 'or' attrExp : {'or', '$1', '$3'}.
 
 attrPath -> attrName :
 	'Elixir.AttributeRepository.Search.AttributePath':'new'(#{attribute => '$1'}).
