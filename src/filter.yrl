@@ -6,7 +6,7 @@ compareOp compValue.
 
 Terminals
 and or not
-true false null string number
+true false null string number datetime
 pr
 eq ne co sw ew gt lt ge le
 '[' ']' '(' ')' '.'
@@ -70,6 +70,7 @@ compValue -> false : false.
 compValue -> null : null.
 compValue -> string : element(3, '$1').
 compValue -> number : element(3, '$1').
+compValue -> datetime : element(3, '$1').
 
 Erlang code.
 
