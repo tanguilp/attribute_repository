@@ -9,6 +9,29 @@ defmodule AttributeRepository.Write do
   ) :: {:ok, AttributeRepository.resource()}
   | {:error, %AttributeRepository.WriteError{}}
 
+  @callback modify(
+    AttributeRepository.resource_id(),
+    [modify_op()],
+    AttributeRepository.run_opts()
+  ) :: :ok
+  | {:error, %AttributeRepository.WriteError{}}
+
+  @type modify_op :: modify_op_add() | modify_op_replace() | modify_op_delete()
+
+  @type modify_op_add ::
+    {:add, AttributeRepository.attribute_name(), AttributeRepository.attribute_value()}
+
+  @type modify_op_replace ::
+    {:replace, AttributeRepository.attribute_name(), AttributeRepository.attribute_value()}
+  | {:replace,
+    AttributeRepository.attribute_name(),
+    AttributeRepository.attribute_value(),
+    AttributeRepository.attribute_value()}
+
+  @type modify_op_delete ::
+    {:delete, AttributeRepository.attribute_name()}
+  | {:delete, AttributeRepository.attribute_name(), AttributeRepository.attribute_value()}
+
   @callback delete(
     AttributeRepository.resource_id(),
     AttributeRepository.run_opts()

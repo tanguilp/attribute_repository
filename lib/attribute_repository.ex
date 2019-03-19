@@ -17,7 +17,7 @@ defmodule AttributeRepository do
   An attribute is case-insensitive
   """
 
-  @type attribute :: String.t()
+  @type attribute_name :: String.t()
 
   @type ref :: {:ref, running_instance(), resource_id()}
 
@@ -38,17 +38,17 @@ defmodule AttributeRepository do
   | ref()
   | nil
 
-  @type object_attribute :: %{required(attribute) => simple_attribute()}
+  @type object_attribute :: %{required(attribute_name) => simple_attribute()}
+
+  @type attribute_value :: simple_attribute() | object_attribute()
 
   @type attribute_data_type ::
-  simple_attribute()
-  | [simple_attribute()]
-  | object_attribute()
-  | [object_attribute()]
+  attribute_value()
+  | [attribute_value()]
 
   @type resource_id :: String.t()
 
-  @type resource :: %{required(attribute()) => attribute_data_type()}
+  @type resource :: %{required(attribute_name()) => attribute_data_type()}
 
   defmodule ReadError do
     @moduledoc """

@@ -4,7 +4,7 @@ defmodule AttributeRepository.Read do
 
   @callback get(
     AttributeRepository.resource_id(),
-    [AttributeRepository.attribute()] | :all,
+    [AttributeRepository.attribute_name()] | :all,
     AttributeRepository.run_opts()
   ) :: {:ok, AttributeRepository.resource()}
   | {:error, %AttributeRepository.ReadError{}}

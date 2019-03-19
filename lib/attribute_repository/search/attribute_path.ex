@@ -7,6 +7,12 @@ defmodule AttributeRepository.Search.AttributePath do
     :sub_attribute
   ]
 
+  @type t :: %__MODULE__{
+    attribute: String.t(),
+    uri: String.t(),
+    sub_attribute: String.t()
+  }
+
   def new(m) do
     %__MODULE__{
       attribute: string(m[:attribute]),
