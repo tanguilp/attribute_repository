@@ -19,6 +19,8 @@ defmodule AttributeRepository do
 
   @type attribute_name :: String.t()
 
+  @type binary_data() :: {:binary_data, binary()}
+
   @type ref :: {:ref, running_instance(), resource_id()}
 
   @typedoc """
@@ -34,7 +36,7 @@ defmodule AttributeRepository do
   | float()
   | integer()
   | DateTime.t()
-  | binary()
+  | binary_data()
   | ref()
   | nil
 
@@ -49,6 +51,8 @@ defmodule AttributeRepository do
   @type resource_id :: String.t()
 
   @type resource :: %{required(attribute_name()) => attribute_data_type()}
+
+  @type resource_list :: [{resource_id(), resource()}]
 
   defmodule ReadError do
     @moduledoc """

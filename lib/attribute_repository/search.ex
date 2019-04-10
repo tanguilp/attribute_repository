@@ -12,4 +12,18 @@ defmodule AttributeRepository.Search do
     AttributeRepository.run_opts()
   ) :: {:ok, search_result()}
   | {:error, %AttributeRepository.ReadError{}}
+
+  defmacro __using__(_opts) do
+    quote do
+      def search(filter_str, attributes, run_opts) when is_binary(filter_str) do
+        case AttributeRepository.Search.Filter.parse(filter_str) do
+          {:ok, filter} ->
+            search(filter, attributes, run_opts)
+
+          {:error, reason} ->
+            {:error, AttributeRepository.ReadError.exception(inspect(reason))}
+        end
+      end
+    end
+  end
 end
