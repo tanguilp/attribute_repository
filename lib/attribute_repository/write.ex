@@ -15,6 +15,8 @@ defmodule AttributeRepository.Write do
     AttributeRepository.run_opts()
   ) :: :ok
   | {:error, %AttributeRepository.WriteError{}}
+  | {:error, %AttributeRepository.ReadError{}}
+  | {:error, %AttributeRepository.Read.NotFoundError{}}
 
   @type modify_op :: modify_op_add() | modify_op_replace() | modify_op_delete()
 

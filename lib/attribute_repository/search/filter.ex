@@ -29,10 +29,23 @@ defmodule AttributeRepository.Search.Filter do
       {:ok, parsed_result}
     else
       {:error, lexer_error, _} ->
-        {:error, lexer_error}
+        {:error, __MODULE__.InvalidError.exception(inspect(lexer_error))}
 
-      {:error, _parser_error} = e ->
-        {:error, e}
+      {:error, parser_error} ->
+        {:error, __MODULE__.InvalidError.exception(inspect(parser_error))}
     end
+  end
+
+  defmodule InvalidError do
+    @moduledoc """
+    Error returned when the filter is invalid because of:
+    - lexer error
+    - syntax error
+    - expression not allowed, such as `attr gt true`
+    """
+
+    defexception message: "Invalid filter"
+
+    def exception(), do: %__MODULE__{}
   end
 end

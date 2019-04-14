@@ -69,4 +69,15 @@ defmodule AttributeRepository do
 
     defexception message: "Write error"
   end
+
+  defmodule UnsupportedError do
+    @moduledoc """
+    Error returned when a `AttributeRepository` feature is not supported by the
+    current impementation
+    """
+
+    defexception message: "Unsupported"
+
+    def exception(), do: %__MODULE__{}
+  end
 end
