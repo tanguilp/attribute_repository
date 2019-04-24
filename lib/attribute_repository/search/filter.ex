@@ -10,10 +10,10 @@ defmodule AttributeRepository.Search.Filter do
   @type val_filter :: attr_exp() | val_log_exp() | val_filter() | {:not, val_filter()}
 
   @type val_log_exp ::
-    {:and, attr_exp(), val_log_exp()}
-  | {:and, attr_exp(), attr_exp()}
-  | {:or, attr_exp(), val_log_exp()}
-  | {:or, attr_exp(), attr_exp()}
+          {:and, attr_exp(), val_log_exp()}
+          | {:and, attr_exp(), attr_exp()}
+          | {:or, attr_exp(), val_log_exp()}
+          | {:or, attr_exp(), attr_exp()}
 
   @type compare_op :: :eq | :ne | :gt | :ge | :lt | :le
 
@@ -21,11 +21,65 @@ defmodule AttributeRepository.Search.Filter do
 
   @type attr_path :: AttributeRepository.Search.AttributePath.t()
 
+  @doc """
+  Parses an expression an returns its AST
+
+  ## Example
+  ```elixir
+  iex> AttributeRepository.Search.Filter.parse(~s(surname co "Tchang"))                                                                                              
+  {:ok,
+   {:attrExp,
+    {:co,
+     %AttributeRepository.Search.AttributePath{
+       attribute: "surname",
+       sub_attribute: nil,
+       uri: nil
+     }, "Tchang"}}}
+  iex> AttributeRepository.Search.Filter.parse(~s(subscription_date gt "2013-12-12T23:12:33Z" or lastname ew "ed" and email[value ew "@mail.tv" and type eq "work"]))
+  {:ok,
+   {:or,
+    {:attrExp,
+     {:gt, 
+      %AttributeRepository.Search.AttributePath{
+        attribute: "subscription_date",
+        sub_attribute: nil,
+        uri: nil
+      }, #DateTime<2013-12-12 23:12:33Z>}},
+    {:and,
+     {:attrExp,
+      {:ew,
+       %AttributeRepository.Search.AttributePath{
+         attribute: "lastname",
+         sub_attribute: nil,
+         uri: nil
+       }, "ed"}},
+     {:valuePath,
+      %AttributeRepository.Search.AttributePath{
+        attribute: "email",
+        sub_attribute: nil,
+        uri: nil
+      },
+      {:and,
+       {:ew,
+        %AttributeRepository.Search.AttributePath{
+          attribute: "value",
+          sub_attribute: nil,
+          uri: nil
+        }, "@mail.tv"},
+       {:eq,
+        %AttributeRepository.Search.AttributePath{
+          attribute: "type",
+          sub_attribute: nil,
+          uri: nil
+        }, "work"}}}}}}
+  ```
+  """
+
   @spec parse(String.t()) :: {:ok, t()} | {:error, any()}
+
   def parse(filter) do
     with {:ok, filter_lexed, _} <- :filter_lexer.string(:erlang.binary_to_list(filter)),
-         {:ok, parsed_result} <- :filter.parse(filter_lexed)
-    do
+         {:ok, parsed_result} <- :filter.parse(filter_lexed) do
       {:ok, parsed_result}
     else
       {:error, lexer_error, _} ->

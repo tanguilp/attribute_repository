@@ -8,10 +8,10 @@ defmodule AttributeRepository.Search.AttributePath do
   ]
 
   @type t :: %__MODULE__{
-    attribute: String.t(),
-    uri: String.t(),
-    sub_attribute: String.t()
-  }
+          attribute: String.t(),
+          uri: String.t(),
+          sub_attribute: String.t()
+        }
 
   def new(m) do
     %__MODULE__{

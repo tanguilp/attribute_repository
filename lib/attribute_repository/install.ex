@@ -3,6 +3,12 @@ defmodule AttributeRepository.Install do
   Callback for installing an attribute repository
   """
 
-  @callback install(AttributeRepository.run_opts(), AttributeRepository.init_opts())
-  :: :ok | {:error, any()}
+  @doc """
+  Configures or installs the attribute repository
+
+  The callback shall return `:ok` when the repository is already installed.
+  """
+
+  @callback install(AttributeRepository.run_opts(), AttributeRepository.init_opts()) ::
+              :ok | {:error, any()}
 end
