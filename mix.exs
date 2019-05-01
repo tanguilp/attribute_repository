@@ -25,7 +25,7 @@ defmodule AttributeRepository.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:jason, github: "michalmuskala/jason", tag: "v1.1.2"},
+      {:jason, "~> 1.1"},
       {:dialyxir, "~> 1.0.0-rc.4", only: [:dev], runtime: false},
       {:ex_doc, "~> 0.19", only: :dev, runtime: false}
     ]
