@@ -9,11 +9,13 @@ can be either single-valued or multi-valued. There are no foreign keys and joins
 DBMSes.
 
 This library defines:
-- 4 callbacks:
+- 6 callbacks:
   - `AttributeRepository.Install`: install the repository on startup
   - `AttributeRepository.Read`: get attributes from the resource's id
   - `AttributeRepository.Write`: create, modify and delete a resource's attributes
   - `AttributeRepository.Search`: search resources that matches a SCIM filter
+  - `AttributeRepository.SupervisedStart`: start a supervised attribute repository
+  - `AttributeRepository.Start`: start an attribute repository (without supervision)
 - a parser for the SCIM filter grammar, and the `AttributeRepository.Search.Filter.parse/1`
 convenience function to parse a SCIM filter
 
