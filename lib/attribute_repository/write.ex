@@ -101,7 +101,9 @@ defmodule AttributeRepository.Write do
   Adds an attribute to a resource
 
   ## Rules
-  - If the attribute already exists, replace it
+  - If the attribute already exists:
+    - If the attribute is multi-valued: add the new value to the multi-valued attribute
+    - Otherwise (the attribute is single-valued), replace the value of the target attribute
   - Otherwise, add it as a new attribute
   """
 
