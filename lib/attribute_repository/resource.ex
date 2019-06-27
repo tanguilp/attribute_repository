@@ -150,6 +150,8 @@ defmodule AttributeRepository.Resource do
         - `remove/3`
       """
 
+      # FIXME: does not work, additional doc not appended
+
       {line_number, existing_moduledoc} =
         Module.delete_attribute(__MODULE__, :moduledoc) || {0, ""}
 
@@ -185,7 +187,7 @@ defmodule AttributeRepository.Resource do
 
       @spec add(t(),
                 AttributeRepository.attribute_name(),
-                AttributeRepository.attribute_value()) :: t()
+                AttributeRepository.attribute_data_type()) :: t()
 
       def add(%__MODULE__{attrs: attrs} = resource, attribute_name, attribute_value) do
         new_value =
@@ -219,7 +221,7 @@ defmodule AttributeRepository.Resource do
 
       @spec remove(t(),
                    AttributeRepository.attribute_name(),
-                   AttributeRepository.attribute_value() | :no_value) :: t()
+                   AttributeRepository.attribute_data_type() | :no_value) :: t()
 
       def remove(resource, attribute_name, value \\ :no_value)
 
@@ -249,14 +251,16 @@ defmodule AttributeRepository.Resource do
       Generates a new `#{__MODULE__}.t()`
 
       Uses `gen_new_id/1` to generate the identifier.
-      ```
+
+      ## Options
+      - `:id`: the id of the client
       """
 
       @spec gen_new(Keyword.t()) :: t()
 
       def gen_new(gen_new_opts \\ []) do
         %__MODULE__{
-          id: gen_new_id(gen_new_opts),
+          id: gen_new_opts[:id] || gen_new_id(gen_new_opts),
           newly_created: true
         }
       end
@@ -265,7 +269,7 @@ defmodule AttributeRepository.Resource do
       Generates a new id
       """
 
-      @spec gen_new_id(Keyword.t()) :: t()
+      @spec gen_new_id(Keyword.t()) :: String.t()
 
       def gen_new_id(_gen_new_opts) do
         16
@@ -277,6 +281,10 @@ defmodule AttributeRepository.Resource do
 
       @doc """
       Loads a resource given its id
+
+      ## Load options
+      - `:attributes`: list of attributes to load (`[AttributeRepository.attribute_name()]`).
+      Takes precedence over the default loaded attributes as set in the configuration
 
       ## Example
       ```elixir
@@ -303,7 +311,7 @@ defmodule AttributeRepository.Resource do
       ```
       """
 
-      @spec load(AttributeRepository.id(), Keyword.t()) ::
+      @spec load(AttributeRepository.resource_id(), Keyword.t()) ::
       {:ok, t()}
       | {:error, %AttributeRepository.ReadError{}}
       | {:error, %AttributeRepository.Read.NotFoundError{}}
@@ -313,7 +321,7 @@ defmodule AttributeRepository.Resource do
 
         case attribute_repository_conf[:module].get(
           resource_id,
-          attribute_repository_conf[:default_loaded_attributes] || :all,
+          load_opts[:attributes] || attribute_repository_conf[:default_loaded_attributes] || :all,
           attribute_repository_conf[:run_opts]
         ) do
           {:ok, resource} ->
@@ -331,6 +339,10 @@ defmodule AttributeRepository.Resource do
       - the configured module must support the search behaviour (`AttributeRepository.Search`)
       - the attribute value must be unique (otherwise
       `{:error, %AttributeRepository.Resource.NotUniqueAttributeError{}})` error will be returned
+
+      ## Load options
+      - `:attributes`: list of attributes to load (`[AttributeRepository.attribute_name()]`).
+      Takes precedence over the default loaded attributes as set in the configuration
 
       ## Example
       ```elixir
@@ -364,7 +376,7 @@ defmodule AttributeRepository.Resource do
       """
 
       @spec load_from_unique_attribute(AttributeRepository.attribute_name(),
-                                       AttributeRepository.attribute_value,
+                                       AttributeRepository.attribute_data_type(),
                                        Keyword.t()) ::
       {:ok, t()}
       | {:error, %AttributeRepository.ReadError{}}
@@ -386,7 +398,7 @@ defmodule AttributeRepository.Resource do
 
         case attribute_repository_conf[:module].search(
           filter,
-          attribute_repository_conf[:default_loaded_attributes] || :all,
+          load_opts[:attributes] || attribute_repository_conf[:default_loaded_attributes] || :all,
           attribute_repository_conf[:run_opts]
         ) do
           {:ok, []} ->
@@ -401,6 +413,44 @@ defmodule AttributeRepository.Resource do
 
           {:error, _} = error ->
             error
+        end
+      end
+
+      @doc """
+      Fetches the listed attributes if not present and returns the resource
+
+      Returns the object with the added attributes, or raises:
+      - `AttributeRepository.ReadError`
+      - `AttributeRepository.Read.NotFoundError`
+      """
+
+      @spec fetch_attributes(t(), [AttributeRepository.attribute_name()]) ::
+      t()
+      | no_return()
+
+      def fetch_attributes(resource, requested_attributes) do
+        existing_attributes =
+          resource.attrs
+          |> Map.keys()
+          |> MapSet.new()
+
+        requested_attributes = MapSet.new(requested_attributes)
+
+        case MapSet.to_list(MapSet.difference(requested_attributes, existing_attributes)) do
+          [] -> # all attributes are already loaded
+            resource
+
+          needed_attributes ->
+            case load(resource.id, attributes: needed_attributes) do
+              {:ok, new_resource} ->
+                %{resource | attrs: Map.merge(resource.attrs, new_resource.attrs)}
+
+              {:error, %AttributeRepository.ReadError{}} ->
+                raise AttributeRepository.ReadError, message: "Read error"
+
+              {:error, %AttributeRepository.Read.NotFoundError{}} ->
+                raise AttributeRepository.Read.NotFoundError, message: "Not found"
+            end
         end
       end
 
@@ -449,11 +499,17 @@ defmodule AttributeRepository.Resource do
       def store(%__MODULE__{newly_created: true} = resource, store_opts) do
         attribute_repository_conf = config(context: store_opts[:context])
 
-        attribute_repository_conf[:module].put(
+        case attribute_repository_conf[:module].put(
           resource.id,
           resource.attrs,
           attribute_repository_conf[:run_opts]
-        )
+        ) do
+          {:ok, _} ->
+            :ok
+
+          {:error, _} = error ->
+            error
+        end
       end
 
       @doc """
