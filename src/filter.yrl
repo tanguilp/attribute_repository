@@ -19,7 +19,7 @@ Endsymbol '$end'.
 Left 100 'or'.
 Left 200 'and'.
 
-filter -> attrExp : {'attrExp', '$1'}.
+filter -> attrExp : {'attr_exp', '$1'}.
 filter -> logExp : '$1'.
 filter -> valuePath : '$1'.
 filter -> '(' filter ')' : '$2'.
@@ -31,7 +31,7 @@ attrExp -> attrPath compareOp compValue : {'$2', '$1', '$3'}.
 logExp -> filter 'and' filter : {'and', '$1', '$3'}.
 logExp -> filter 'or' filter : {'or', '$1', '$3'}.
 
-valuePath -> attrPath '[' valFilter ']' : {'valuePath', '$1', '$3'}.
+valuePath -> attrPath '[' valFilter ']' : {'value_path', '$1', '$3'}.
 
 valFilter -> attrExp : '$1'.
 valFilter -> valLogExp : '$1'.
@@ -44,18 +44,10 @@ valLogExp -> attrExp 'and' attrExp : {'and', '$1', '$3'}.
 valLogExp -> attrExp 'or' valLogExp : {'or', '$1', '$3'}.
 valLogExp -> attrExp 'or' attrExp : {'or', '$1', '$3'}.
 
-attrPath -> attrName :
-	'Elixir.AttributeRepository.Search.AttributePath':'new'(#{attribute => '$1'}).
-attrPath -> uri attrName :
-	'Elixir.AttributeRepository.Search.AttributePath':'new'(#{attribute => '$2',
-								  uri => element(3, '$1')}).
-attrPath -> attrName '.' attrName :
-	'Elixir.AttributeRepository.Search.AttributePath':'new'(#{attribute => '$1',
-								  sub_attribute => '$3'}).
-attrPath -> uri attrName '.' attrName :
-	'Elixir.AttributeRepository.Search.AttributePath':'new'(#{attribute => '$2',
-								  uri => element(3, '$1'),
-								  sub_attribute => '$4'}).
+attrPath -> attrName : {'attr_path', 'nil', '$1', 'nil'}.
+attrPath -> uri attrName : {'attr_path', element(3, '$1'), '$2', 'nil'}.
+attrPath -> attrName '.' attrName : {'attr_path', 'nil', '$1', '$3'}.
+attrPath -> uri attrName '.' attrName : {'attr_path', element(3, '$1'), '$2', '$4'}.
 
 attrName -> attributename : element(3, '$1').
 
