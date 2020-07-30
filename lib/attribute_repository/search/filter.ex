@@ -35,17 +35,17 @@ defmodule AttributeRepository.Search.Filter do
   ## Example
 
       iex> AttributeRepository.Search.Filter.parse(~s(surname co "Tchang"))
-      {:ok, {:attr_exp, {:co, {:attr_path, nil, 'surname', nil}, "Tchang"}}}
+      {:ok, {:attr_exp, {:co, {:attr_path, nil, "surname", nil}, "Tchang"}}}
 
       iex> AttributeRepository.Search.Filter.parse(~s(subscription_date gt "2013-12-12T23:12:33Z" or lastname ew "ed" and email[value ew "@mail.tv" and type eq "work"]))
       {:ok,
        {:or,
         {:attr_exp,
-         {:gt, {:attr_path, nil, 'subscription_date', nil}, ~U[2013-12-12 23:12:33Z]}},
-        {:and, {:attr_exp, {:ew, {:attr_path, nil, 'lastname', nil}, "ed"}},
-         {:value_path, {:attr_path, nil, 'email', nil},
-          {:and, {:ew, {:attr_path, nil, 'value', nil}, "@mail.tv"},
-           {:eq, {:attr_path, nil, 'type', nil}, "work"}}}}}}
+         {:gt, {:attr_path, nil, "subscription_date", nil}, ~U[2013-12-12 23:12:33Z]}},
+        {:and, {:attr_exp, {:ew, {:attr_path, nil, "lastname", nil}, "ed"}},
+         {:value_path, {:attr_path, nil, "email", nil},
+          {:and, {:ew, {:attr_path, nil, "value", nil}, "@mail.tv"},
+           {:eq, {:attr_path, nil, "type", nil}, "work"}}}}}}
   """
   @spec parse(String.t()) :: {:ok, t()} | {:error, any()}
   def parse(filter) do
@@ -71,8 +71,8 @@ defmodule AttributeRepository.Search.Filter do
       iex> AttributeRepository.Search.Filter.parse!(~s|not(birthdate lt "2000-01-01T00:0:00Z" or millenial eq true)|)
       {:not,
        {:or,
-        {:attr_exp, {:lt, {:attr_path, nil, 'birthdate', nil}, "2000-01-01T00:0:00Z"}},
-        {:attr_exp, {:eq, {:attr_path, nil, 'millenial', nil}, true}}}}
+        {:attr_exp, {:lt, {:attr_path, nil, "birthdate", nil}, "2000-01-01T00:0:00Z"}},
+        {:attr_exp, {:eq, {:attr_path, nil, "millenial", nil}, true}}}}
 
       iex> AttributeRepository.Search.Filter.parse!(~s|and(birthdate lt "2000-01-01T00:0:00Z" or millenial eq true)|) 
       ** (AttributeRepository.Search.Filter.InvalidError) Parser error: syntax error before: 'and'
@@ -116,13 +116,13 @@ defmodule AttributeRepository.Search.Filter do
   def serialize({:attr_path, nil, attr, sub_attr}), do: attr <> "." <> sub_attr
   def serialize({:attr_path, uri, attr, nil}), do: uri <> ":" <> attr
   def serialize({:attr_path, uri, attr, sub_attr}), do: uri <> ":" <> attr <> "." <> sub_attr
-  def serialize(%DateTime{} = datetime), do: DateTime.to_iso8601(datetime)
+  def serialize(%DateTime{} = datetime), do: ~s("#{DateTime.to_iso8601(datetime)}")
   def serialize(true), do: "true"
   def serialize(false), do: "false"
   def serialize(nil), do: "null"
   def serialize(int) when is_integer(int), do: to_string(int)
   def serialize(float) when is_float(float), do: :io_lib_format.fwrite_g(float) |> to_string()
-  def serialize(<<_::binary>> = str), do: str
+  def serialize(<<_::binary>> = str), do: ~s("#{str}")
 
   defmodule InvalidError do
     @moduledoc """

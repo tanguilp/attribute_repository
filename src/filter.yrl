@@ -44,10 +44,10 @@ valLogExp -> attrExp 'and' attrExp : {'and', '$1', '$3'}.
 valLogExp -> attrExp 'or' valLogExp : {'or', '$1', '$3'}.
 valLogExp -> attrExp 'or' attrExp : {'or', '$1', '$3'}.
 
-attrPath -> attrName : {'attr_path', 'nil', '$1', 'nil'}.
-attrPath -> uri attrName : {'attr_path', element(3, '$1'), '$2', 'nil'}.
-attrPath -> attrName '.' attrName : {'attr_path', 'nil', '$1', '$3'}.
-attrPath -> uri attrName '.' attrName : {'attr_path', element(3, '$1'), '$2', '$4'}.
+attrPath -> attrName : {'attr_path', 'nil', list_to_binary('$1'), 'nil'}.
+attrPath -> uri attrName : {'attr_path', list_to_binary(element(3, '$1')), list_to_binary('$2'), 'nil'}.
+attrPath -> attrName '.' attrName : {'attr_path', 'nil', list_to_binary('$1'), list_to_binary('$3')}.
+attrPath -> uri attrName '.' attrName : {'attr_path', list_to_binary(element(3, '$1')), list_to_binary('$2'), list_to_binary('$4')}.
 
 attrName -> attributename : element(3, '$1').
 

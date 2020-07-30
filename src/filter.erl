@@ -791,7 +791,7 @@ yeccgoto_valuePath(18=_S, Cat, Ss, Stack, T, Ts, Tzr) ->
 yeccpars2_5_(__Stack0) ->
  [__1 | __Stack] = __Stack0,
  [begin
-   { attr_path , nil , __1 , nil }
+   { attr_path , nil , list_to_binary ( __1 ) , nil }
   end | __Stack].
 
 -compile({inline,yeccpars2_6_/1}).
@@ -815,7 +815,7 @@ yeccpars2_8_(__Stack0) ->
 yeccpars2_11_(__Stack0) ->
  [__2,__1 | __Stack] = __Stack0,
  [begin
-   { attr_path , element ( 3 , __1 ) , __2 , nil }
+   { attr_path , list_to_binary ( element ( 3 , __1 ) ) , list_to_binary ( __2 ) , nil }
   end | __Stack].
 
 -compile({inline,yeccpars2_13_/1}).
@@ -823,7 +823,7 @@ yeccpars2_11_(__Stack0) ->
 yeccpars2_13_(__Stack0) ->
  [__4,__3,__2,__1 | __Stack] = __Stack0,
  [begin
-   { attr_path , element ( 3 , __1 ) , __2 , __4 }
+   { attr_path , list_to_binary ( element ( 3 , __1 ) ) , list_to_binary ( __2 ) , list_to_binary ( __4 ) }
   end | __Stack].
 
 -compile({inline,yeccpars2_16_/1}).
@@ -863,7 +863,7 @@ yeccpars2_22_(__Stack0) ->
 yeccpars2_24_(__Stack0) ->
  [__3,__2,__1 | __Stack] = __Stack0,
  [begin
-   { attr_path , nil , __1 , __3 }
+   { attr_path , nil , list_to_binary ( __1 ) , list_to_binary ( __3 ) }
   end | __Stack].
 
 -compile({inline,yeccpars2_27_/1}).
