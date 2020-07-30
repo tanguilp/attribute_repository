@@ -50,7 +50,7 @@ defmodule AttributeRepository.Search.Filter do
   @spec parse(String.t()) :: {:ok, t()} | {:error, any()}
   def parse(filter) do
     with {:ok, filter_lexed, _} <- :filter_lexer.string(:erlang.binary_to_list(filter)),
-         {:ok, parsed_result} <- :filter.parse(filter_lexed) do
+         {:ok, parsed_result} <- :filter_parser.parse(filter_lexed) do
       {:ok, parsed_result}
     else
       {:error, {_, _, reason}, _} ->
