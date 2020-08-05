@@ -49,9 +49,9 @@ defmodule AttributeRepository do
           | ref()
           | nil
 
-  @type object_attribute :: %{required(attribute_name) => simple_attribute()}
+  @type complex_attribute :: %{required(attribute_name) => simple_attribute()}
 
-  @type attribute_value :: simple_attribute() | object_attribute()
+  @type attribute_value :: simple_attribute() | complex_attribute()
 
   @type attribute_data_type :: attribute_value() | [attribute_value()]
 

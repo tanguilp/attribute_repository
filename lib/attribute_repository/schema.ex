@@ -47,6 +47,28 @@ defmodule AttributeRepository.Schema do
 
   @type attribute_uniqueness :: :none | :server | :global
 
+  defmodule MissingAttributeDefinitionError do
+    @enforce_keys [:attribute_name]
+
+    defexception [:attribute_name, :sub_attribute_name]
+
+    @type t :: %__MODULE__{
+      attribute_name: String.t(),
+      sub_attribute_name: String.t() | nil
+    }
+
+    @impl true
+    def message(%{attribute_name: attr_name, sub_attribute_name: sub_attr_name})
+    when not is_nil(sub_attr_name)
+    do
+      "missing attribute definition for subattribute: " <> attr_name <> "." <> sub_attr_name
+    end
+
+    def message(%{attribute_name: attr_name}) do
+      "missing attribute definition for attribute: " <> attr_name
+    end
+  end
+
   defmacro __using__(_) do
     quote do
       @before_compile AttributeRepository.Schema
@@ -232,6 +254,76 @@ defmodule AttributeRepository.Schema do
 
       _ ->
         raise "Attribute #{name} has incorrect canonical values definition, must be a list"
+    end
+  end
+
+  @doc """
+  Returns the attribute or subattribute definition from a schema or a list of schemas
+  """
+  @spec attribute_definition(
+    t() | [t()],
+    AttributeRepository.attribute_name(),
+    AttributeRepository.attribute_name() | nil
+  ) :: {:ok, attribute_definition()} | {:error, Exception.t()}
+  def attribute_definition(schema_or_schemas, attribute_name, sub_attribute_name \\ nil)
+
+  def attribute_definition(%__MODULE__{} = schema, <<_::binary>> = attr_name, nil) do
+    case schema.attributes[attr_name] do
+      %{} = attr_def ->
+        {:ok, attr_def}
+
+      nil ->
+        {:error, %MissingAttributeDefinitionError{attribute_name: attr_name}}
+    end
+  end
+
+  def attribute_definition([], <<_::binary>> = attr_name, nil) do
+    {:error, %MissingAttributeDefinitionError{attribute_name: attr_name}}
+  end
+
+  def attribute_definition(
+    [%__MODULE__{} = schema | other_schemas], <<_::binary>> = attr_name, nil
+  ) do
+    case attribute_definition(schema, attr_name) do
+      {:ok, _} = result ->
+        result
+
+      {:error, _} ->
+        attribute_definition(other_schemas, attr_name)
+    end
+  end
+
+  def attribute_definition(
+    %__MODULE__{} = schema, <<_::binary>> = attr_name, <<_::binary>> = sub_attr_name
+  ) do
+    case get_in(schema.attributes, [attr_name, :sub_attributes, sub_attr_name]) do
+      %{} = sub_attr_def ->
+        {:ok, sub_attr_def}
+
+      _ ->
+        {:error, %MissingAttributeDefinitionError{
+          attribute_name: attr_name, sub_attribute_name: sub_attr_name}
+        }
+    end
+  end
+
+  def attribute_definition([], <<_::binary>> = attr_name, <<_::binary>> = sub_attr_name) do
+    {:error, %MissingAttributeDefinitionError{
+      attribute_name: attr_name, sub_attribute_name: sub_attr_name}
+    }
+  end
+
+  def attribute_definition(
+    [%__MODULE__{} = schema | other_schemas],
+    <<_::binary>> = attr_name,
+    <<_::binary>> = sub_attr_name)
+  do
+    case attribute_definition(schema, attr_name, sub_attr_name) do
+      {:ok, _} = result ->
+        result
+
+      {:error, _} ->
+        attribute_definition(other_schemas, attr_name, sub_attr_name)
     end
   end
 

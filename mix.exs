@@ -5,7 +5,7 @@ defmodule AttributeRepository.MixProject do
     [
       app: :attribute_repository,
       version: "0.2.0",
-      elixir: "~> 1.7",
+      elixir: "~> 1.10.0",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       docs: [

@@ -22,10 +22,14 @@ defmodule AttributeRepository.Search.Filter do
   @typedoc """
   Tuple compose of `{:attr_path, uri_or_nil, attribute, subattribute_or_nil}`
   """
-  @type attr_path :: {:attr_path, uri() | nil, attr_name(), attr_name | nil}
+  @type attr_path :: {
+    :attr_path,
+    uri() | nil,
+    AttributeRepository.attribute_name(),
+    AttributeRepository.attribute_name() | nil
+  }
 
   @type uri :: String.t()
-  @type attr_name :: String.t()
 
   @operators [:eq, :ne, :lt, :le, :gt, :ge, :co, :sw, :ew]
 

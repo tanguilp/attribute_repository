@@ -23,6 +23,10 @@ convenience function to parse a SCIM filter
 
 This library is installed automativally when using one of its implementations.
 
+## Support
+
+Elixir 1.10.0+
+
 ## Implementations
 
 - [AttributeRepositoryLdap](https://github.com/tanguilp/attribute_repository_ldap)

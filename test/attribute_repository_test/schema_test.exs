@@ -232,4 +232,34 @@ defmodule AttributeRepository.SchemaTest do
       assert schema2.attributes["some_other_string"][:sub_attributes] == nil
     end
   end
+
+  describe ".attribute_definition/3" do
+    test "returns existing attribute definition" do
+      {:ok, _} = Schema.attribute_definition(BasicSchemas.__schemas__, "some_string")
+    end
+
+    test "returns an error when attribute is not defined in the schema" do
+      {:error, _} = Schema.attribute_definition(BasicSchemas.__schemas__, "nonexistent_attr")
+    end
+
+    test "returns existing subattribute definition" do
+      schemas = BasicSchemas.__schemas__()
+
+      {:ok, _} = Schema.attribute_definition(schemas, "some_complex", "some_string")
+    end
+
+    test "returns an error when subattribute is not defined in the schema (nonexistent attr)" do
+      schemas = BasicSchemas.__schemas__()
+
+      {:error, _} =
+        Schema.attribute_definition(schemas, "nonexistent_attr", "nonexistent_subattr")
+    end
+
+    test "returns an error when subattribute is not defined in the schema (existing attr)" do
+      schemas = BasicSchemas.__schemas__()
+
+      {:error, _} =
+        Schema.attribute_definition(schemas, "some_complex", "nonexistent_subattr")
+    end
+  end
 end
